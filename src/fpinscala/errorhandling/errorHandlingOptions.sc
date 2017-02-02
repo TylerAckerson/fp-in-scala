@@ -1,6 +1,6 @@
 import fpinscala.errorhandling._
 
-object ch4 {
+object errorHandlingOptions {
 
   val z = Some(2)
   val x  = None
@@ -24,6 +24,4 @@ object ch4 {
 //  Option.failingFn2(4)
 
   Option.map2(z, z)((a, b) => a + b)
-//  Option.map2(z, z)((a, b) => a + b)
-
 }
