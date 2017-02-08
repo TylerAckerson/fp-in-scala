@@ -71,6 +71,25 @@ trait Stream[+A] {
   def flatMap[B](f: A => Stream[B]): Stream[B] =
     foldRight(empty[B])((h, t) => f(h) append t)
 
+  // 5.8
+  //  Generalize ones slightly to the function constant, which returns an infinite Stream of a given value.
+  def constant[A](a: A): Stream[A] = cons(a, constant(a))
+
+  // Write a function that generates an infinite stream of integers, starting from n, then n + 1, n + 2, and so on.
+  def from(n: Int): Stream[Int] = cons(n, from(n+1))
+
+  // 5.10
+  //  Write a function fibs that generates the infinite stream of Fibonacci numbers: 0, 1, 1, 2, 3, 5, 8, and so on.
+  def fibs(a: Int = 0, b: Int = 1): Stream[Int] =
+    cons(a, fibs(b, a+b))
+
+  // 5.11
+  //  Write a more general stream-building function called unfold.
+  // It takes an initial state, and a function for producing both the next state and the next value in the generated stream.
+  def unfold[A, S](z: S)(f: S => Option[(A, S)]): Stream[A] = ???
+
+
+
   def startsWith[B](s: Stream[B]): Boolean = ???
 }
 

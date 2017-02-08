@@ -1,7 +1,5 @@
 import fpinscala.laziness._
 
-import scala.collection.immutable.Stream.cons
-
 object laziness {
 
   val s = Stream(1, 2, 3, 4)
@@ -34,5 +32,22 @@ object laziness {
 
   s.flatMap(x => if (x % 2 == 0) Stream(x) else Empty).toList
   odds.flatMap(x => if (x % 3 == 0) Stream(x) else Empty).toList
+
+  val ones: Stream[Int] = Stream.cons(1, ones)
+
+  ones.take(5).toList
+  ones.exists(_ == 1)
+  ones.map(_ + 1).exists(_ % 2 == 0)
+  ones.takeWhile(_ == 1)
+  ones.forAll(_ != 1)
+
+  val twos: Stream[Int] = Stream().constant(2)
+  twos.take(3).toList
+
+  val hundyPlus: Stream[Int] = Stream().from(100)
+  hundyPlus.take(3).toList
+
+  val fibs: Stream[Int] = Stream().fibs()
+  fibs.take(7).toList // 0, 1, 1, 2, 3, 5, 8,
 
 }
