@@ -2,6 +2,8 @@ package fpinscala.laziness
 
 import Stream._
 
+import scala.annotation.tailrec
+
 trait Stream[+A] {
 
   // 5.1
@@ -17,7 +19,11 @@ trait Stream[+A] {
     case _ => empty
   }
 
-  def drop(n: Int): Stream[A] = ???
+  @annotation.tailrec
+  final def drop(n: Int): Stream[A] = this match {
+    case Cons(_, t) if n > 0 => t().drop(n-1)
+    case _ => this
+  }
 
 
   def foldRight[B](z: => B)(f: (A, => B) => B): B = // The arrow `=>` in front of the argument type `B` means that the function `f` takes its second argument by name and may choose not to evaluate it.
@@ -35,14 +41,35 @@ trait Stream[+A] {
     case Cons(h, t) => if (f(h())) Some(h()) else t().find(f)
   }
 
-  def takeWhile(p: A => Boolean): Stream[A] = ???
+  def takeWhile(p: A => Boolean): Stream[A] = this match {
+    case Cons(h, t) if p(h()) => cons(h(), t().takeWhile(p))
+    case _ => empty
+  }
 
-  def forAll(p: A => Boolean): Boolean = ???
+  def takeWhileFold(p: A => Boolean): Stream[A] =
+    foldRight[Stream[A]](empty)((a, b) => if (p(a)) cons(a,b) else empty)
 
-  def headOption: Option[A] = ???
+
+  def forAll(p: A => Boolean): Boolean =
+    foldRight(true)((a,b) => p(a) && b)
+
+  def headOption: Option[A] =
+    foldRight[Option[A]](None)((h, _) => Some(h))
 
   // 5.7 map, filter, append, flatmap using foldRight. Part of the exercise is
   // writing your own function signatures.
+
+  def map[B](p: A => B): Stream[B] =
+    foldRight(empty[B])((h, t) => cons(p(h), t))
+
+  def filter(p: A => Boolean): Stream[A] =
+    foldRight(empty[A])((h, t) => if (p(h)) cons(h, t) else t)
+
+  def append[B >: A](s: => Stream[B]): Stream[B] =
+    foldRight(s)((h, t) => cons(h, t))
+
+  def flatMap[B](f: A => Stream[B]): Stream[B] =
+    foldRight(empty[B])((h, t) => f(h) append t)
 
   def startsWith[B](s: Stream[B]): Boolean = ???
 }
