@@ -86,9 +86,16 @@ trait Stream[+A] {
   // 5.11
   //  Write a more general stream-building function called unfold.
   // It takes an initial state, and a function for producing both the next state and the next value in the generated stream.
-  def unfold[A, S](z: S)(f: S => Option[(A, S)]): Stream[A] = ???
+  def unfold[A, S](z: S)(f: S => Option[(A, S)]): Stream[A] = f(z) match {
+    case None => empty
+    case Some((a, s)) => cons(a, unfold(s)(f))
+  }
 
-
+  // 5.12
+  def fibsUnfold: Stream[Int] = unfold((0, 1)) { case (i, j) => Some((i, (j, i + j))) }
+  def onesUnfold: Stream[Int] = unfold(1)(_ => Some(1,1))
+  def constantUnfold[A](a: A): Stream[A] = unfold(a)(_ => Some((a, a)))
+  def fromUnfold(n: Int): Stream[Int] = unfold(n)(x => Some((x, x+1)))
 
   def startsWith[B](s: Stream[B]): Boolean = ???
 }

@@ -50,4 +50,9 @@ object laziness {
   val fibs: Stream[Int] = Stream().fibs()
   fibs.take(7).toList // 0, 1, 1, 2, 3, 5, 8,
 
+  Stream().fibsUnfold.take(7).toList
+  Stream().onesUnfold.take(3).toList
+  Stream().constantUnfold(2).take(4).toList
+  Stream().fromUnfold(5).take(3).toList
+
 }
